@@ -1,0 +1,3 @@
+[submodule "libs/neural-network"]
+	path = libs/neural-network
+	url = https://github.com/RivoLink/neural-network

@@ -12,6 +12,9 @@ repositories {
 }
 
 dependencies {
+    // Neural Network library
+    implementation files('../libs/neural-network/dist/neural-network.jar')
+    
     // Testing
     testImplementation libs.junit.jupiter
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -27,11 +30,35 @@ application {
     mainClass = 'mg.rivolink.Main'
 }
 
+// Verify neural-network JAR exists before compilation
+tasks.compileJava {
+    doFirst {
+        def jarFile = file('../libs/neural-network/dist/neural-network.jar')
+        if (!jarFile.exists()) {
+            throw new GradleException("neural-network.jar not found")
+        }
+        println "Using neural-network.jar: ${jarFile.name}"
+    }
+}
+
 test {
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"
         exceptionFormat "full"
         showStandardStreams = false
+    }
+}
+
+// Neural Network JAR rebuild
+task rebuildNeuralNetwork(type: Exec) {
+    group = 'build'
+    description = 'Rebuild neural-network.jar from source'
+    workingDir '../libs/neural-network'
+    
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        commandLine 'bash', 'scripts/build.sh', '--clean', '--target=11'
+    } else {
+        commandLine './scripts/build.sh', '--clean', '--target=11'
     }
 }

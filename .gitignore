@@ -8,3 +8,8 @@ build
 # Custom
 *.rl
 notes
+
+# Data and Models
+/data
+/models
+/output

@@ -1,0 +1,167 @@
+package mg.rivolink.mnist.model;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import mg.rivolink.ai.Network;
+import mg.rivolink.mnist.data.MNISTDataLoader;
+
+/**
+ * MNISTTrainer - Trains the neural network on MNIST/EMNIST data
+ */
+public class MNISTTrainer {
+
+    public enum DatasetType {
+        MNIST(10, "Digits (0-9)"),
+        EMNIST(62, "Digits + Letters (0-9, A-Z, a-z)");
+
+        public final int numClasses;
+        public final String description;
+
+        DatasetType(int numClasses, String description) {
+            this.numClasses = numClasses;
+            this.description = description;
+        }
+    }
+
+    private Network network;
+    private final int numClasses;
+    private final DatasetType datasetType;
+
+    public MNISTTrainer(int inputSize, int hiddenSize, DatasetType datasetType) {
+        this.datasetType = datasetType;
+        this.numClasses = datasetType.numClasses;
+        this.network = new Network.Builder()
+                .inputSize(inputSize)
+                .hiddenSize(hiddenSize)
+                .outputSize(numClasses)
+                .learningRate(0.5f)
+                .build();
+    }
+
+    public MNISTTrainer(int inputSize, int hidden1Size, int hidden2Size, DatasetType datasetType) {
+        this.datasetType = datasetType;
+        this.numClasses = datasetType.numClasses;
+        this.network = new Network.Builder()
+                .inputSize(inputSize)
+                .hiddenSize(hidden1Size)
+                .addHiddenLayer(hidden2Size)
+                .outputSize(numClasses)
+                .learningRate(0.3f)
+                .build();
+    }
+
+    // Legacy constructors for MNIST compatibility
+    public MNISTTrainer(int inputSize, int hiddenSize) {
+        this(inputSize, hiddenSize, DatasetType.MNIST);
+    }
+
+    public MNISTTrainer(int inputSize, int hidden1Size, int hidden2Size) {
+        this(inputSize, hidden1Size, hidden2Size, DatasetType.MNIST);
+    }
+
+    public void train(MNISTDataLoader.MNISTData trainingData, int epochs) {
+        int dataSize = trainingData.images.length;
+        
+        System.out.println("Starting training with " + dataSize + " samples for " + epochs + " epochs...");
+        
+        for (int epoch = 0; epoch < epochs; epoch++) {
+            float totalLoss = 0;
+            int correctPredictions = 0;
+            
+            for (int i = 0; i < dataSize; i++) {
+                float[] image = trainingData.images[i];
+                int label = trainingData.labels[i];
+                float[] target = MNISTDataLoader.toOneHotFloat(label, numClasses);
+                
+                network.train(image, target);
+                
+                float[] prediction = network.predict(image);
+                int predictedLabel = argMax(prediction);
+                if (predictedLabel == label) {
+                    correctPredictions++;
+                }
+                
+                totalLoss += calculateMSE(prediction, target);
+                
+                if ((i + 1) % 1000 == 0) {
+                    System.out.println("  Epoch " + (epoch + 1) + "/" + epochs + 
+                                     " - Sample " + (i + 1) + "/" + dataSize);
+                }
+            }
+            
+            float avgLoss = totalLoss / dataSize;
+            float accuracy = (float) correctPredictions / dataSize;
+            System.out.println("Epoch " + (epoch + 1) + "/" + epochs + 
+                             " - Loss: " + String.format("%.4f", avgLoss) + 
+                             " - Accuracy: " + String.format("%.2f%%", accuracy * 100));
+        }
+    }
+
+    public float evaluate(MNISTDataLoader.MNISTData testData) {
+        int correctPredictions = 0;
+        int totalSamples = testData.images.length;
+        
+        System.out.println("Evaluating on " + totalSamples + " test samples...");
+        
+        for (int i = 0; i < totalSamples; i++) {
+            float[] image = testData.images[i];
+            int label = testData.labels[i];
+            
+            float[] prediction = network.predict(image);
+            int predictedLabel = argMax(prediction);
+            
+            if (predictedLabel == label) {
+                correctPredictions++;
+            }
+            
+            if ((i + 1) % 1000 == 0) {
+                System.out.println("  Evaluated " + (i + 1) + "/" + totalSamples);
+            }
+        }
+        
+        float accuracy = (float) correctPredictions / totalSamples;
+        System.out.println("Test Accuracy: " + String.format("%.2f%%", accuracy * 100));
+        return accuracy;
+    }
+
+    public Network getNetwork() {
+        return network;
+    }
+
+    private int argMax(float[] array) {
+        int maxIndex = 0;
+        float maxValue = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if (array[i] > maxValue) {
+                maxValue = array[i];
+                maxIndex = i;
+            }
+        }
+        return maxIndex;
+    }
+
+    private float calculateMSE(float[] prediction, float[] target) {
+        float mse = 0;
+        for (int i = 0; i < prediction.length; i++) {
+            float error = prediction[i] - target[i];
+            mse += error * error;
+        }
+        return mse / prediction.length;
+    }
+
+    public void saveModel(String filePath) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
+            oos.writeObject(network);
+        }
+    }
+
+    public void loadModel(String filePath) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
+            this.network = (Network) ois.readObject();
+        }
+    }
+}

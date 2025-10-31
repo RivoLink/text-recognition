@@ -9,4 +9,4 @@ Run the dataset downloader task via:
 ```
 
 Switch to MNIST by using `-Pdataset=mnist`  
-The downloaded dataset is stored under `data`
+The downloaded dataset is stored under `app/data`

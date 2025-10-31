@@ -37,3 +37,9 @@ task downloadDataset(type: DefaultTask) {
     description = 'Run the dataset downloader (override dataset with -Pdataset=mnist|emnist)'
     dependsOn ':app:runDatasetDownloader'
 }
+
+task trainModel(type: DefaultTask) {
+    group = 'application'
+    description = 'Run the model trainer (override dataset with -Pdataset=mnist|emnist)'
+    dependsOn ':app:runModelTrainer'
+}

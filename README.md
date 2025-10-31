@@ -10,3 +10,13 @@ Run the dataset downloader task via:
 
 Switch to MNIST by using `-Pdataset=mnist`  
 The downloaded dataset is stored under `app/data`
+
+### Training
+Train the neural network with:
+
+```bash
+./gradlew trainModel -Pdataset=emnist
+```
+
+Swap to MNIST training by passing `-Pdataset=mnist`  
+Model checkpoints are written to `app/models`

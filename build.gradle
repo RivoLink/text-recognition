@@ -31,3 +31,9 @@ task run {
     description = 'Run the application'
     dependsOn ':app:run'
 }
+
+task downloadDataset(type: DefaultTask) {
+    group = 'application'
+    description = 'Run the dataset downloader (override dataset with -Pdataset=mnist|emnist)'
+    dependsOn ':app:runDatasetDownloader'
+}

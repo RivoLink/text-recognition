@@ -62,3 +62,16 @@ task rebuildNeuralNetwork(type: Exec) {
         commandLine './scripts/build.sh', '--clean', '--target=11'
     }
 }
+
+// gradle :app:runDatasetDownloader -Pdataset=mnist
+task runDatasetDownloader(type: JavaExec) {
+    group = 'application'
+    description = 'Download MNIST/EMNIST dataset (override with -Pdataset=mnist|emnist)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'mg.rivolink.mnist.task.MNISTDownloaderTask'
+    dependsOn 'classes'
+
+    if (project.hasProperty('dataset')) {
+        args project.property('dataset')
+    }
+}

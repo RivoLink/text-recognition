@@ -6,6 +6,10 @@ build
 # VSCode
 .vscode
 
+# App data
+/app/data/*
+!/app/data/.gitkeep
+
 # Custom
 *.rl
 notes

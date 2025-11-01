@@ -3,6 +3,7 @@ package mg.rivolink.mnist.task;
 import java.io.IOException;
 import java.util.Locale;
 
+import mg.rivolink.mnist.data.MNISTDataset;
 import mg.rivolink.mnist.tool.MNISTDownloader;
 import mg.rivolink.mnist.tool.MNISTLoader;
 import mg.rivolink.mnist.helper.MNISTPredictor;
@@ -19,7 +20,7 @@ public final class MNISTTrainerTask {
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        MNISTTrainer.DatasetType datasetType = resolveDatasetType(args);
+        MNISTDataset.Type datasetType = resolveDatasetType(args);
 
         MNISTDownloader downloader = createDownloader(datasetType);
         MNISTDownloader.DatasetPaths datasetPaths = downloader.getDatasetPaths();
@@ -44,7 +45,7 @@ public final class MNISTTrainerTask {
         System.out.println();
 
         MNISTTrainer trainer;
-        if (datasetType == MNISTTrainer.DatasetType.EMNIST) {
+        if (datasetType == MNISTDataset.Type.EMNIST) {
             trainer = new MNISTTrainer(784, 256, 128, datasetType);
         } else {
             trainer = new MNISTTrainer(784, 128, 64, datasetType);
@@ -77,29 +78,29 @@ public final class MNISTTrainerTask {
         }
     }
 
-    private static MNISTTrainer.DatasetType resolveDatasetType(String[] args) {
+    private static MNISTDataset.Type resolveDatasetType(String[] args) {
         if (args != null && args.length > 0) {
             String requested = args[0].trim().toLowerCase(Locale.ROOT);
             if ("mnist".equals(requested)) {
-                return MNISTTrainer.DatasetType.MNIST;
+                return MNISTDataset.Type.MNIST;
             }
             if ("emnist".equals(requested)) {
-                return MNISTTrainer.DatasetType.EMNIST;
+                return MNISTDataset.Type.EMNIST;
             }
             System.out.println("Unknown dataset '" + args[0] + "'. Falling back to EMNIST.");
         }
 
-        return MNISTTrainer.DatasetType.EMNIST;
+        return MNISTDataset.Type.EMNIST;
     }
 
-    private static MNISTDownloader createDownloader(MNISTTrainer.DatasetType datasetType) {
-        if (datasetType == MNISTTrainer.DatasetType.EMNIST) {
-            return new MNISTDownloader(EMNIST_DATA_DIR, MNISTDownloader.DatasetType.EMNIST);
+    private static MNISTDownloader createDownloader(MNISTDataset.Type datasetType) {
+        if (datasetType == MNISTDataset.Type.EMNIST) {
+            return new MNISTDownloader(EMNIST_DATA_DIR, MNISTDataset.Type.EMNIST);
         }
-        return new MNISTDownloader(MNIST_DATA_DIR, MNISTDownloader.DatasetType.MNIST);
+        return new MNISTDownloader(MNIST_DATA_DIR, MNISTDataset.Type.MNIST);
     }
 
-    private static String buildModelPath(MNISTTrainer.DatasetType datasetType) {
+    private static String buildModelPath(MNISTDataset.Type datasetType) {
         String modelFile = datasetType.name().toLowerCase(Locale.ROOT) + "-model.bin";
         return MODEL_DIR + modelFile;
     }

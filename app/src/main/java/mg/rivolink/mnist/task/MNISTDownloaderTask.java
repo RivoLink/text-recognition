@@ -1,8 +1,8 @@
 package mg.rivolink.mnist.task;
 
+import mg.rivolink.mnist.data.MNISTDataset;
 import mg.rivolink.mnist.tool.MNISTDownloader;
 import mg.rivolink.mnist.tool.MNISTDownloader.DatasetPaths;
-import mg.rivolink.mnist.tool.MNISTDownloader.DatasetType;
 
 public final class MNISTDownloaderTask {
 
@@ -17,8 +17,8 @@ public final class MNISTDownloaderTask {
         System.out.println("=== Dataset Downloader ===");
         System.out.println();
 
-        DatasetType datasetType = resolveDatasetType(args);
-        final String downloadDir = datasetType == DatasetType.EMNIST ? EMNIST_DATA_DIR : MNIST_DATA_DIR;
+        MNISTDataset.Type datasetType = resolveDatasetType(args);
+        final String downloadDir = datasetType == MNISTDataset.Type.EMNIST ? EMNIST_DATA_DIR : MNIST_DATA_DIR;
         final MNISTDownloader downloader = new MNISTDownloader(downloadDir, datasetType);
 
         if (downloader.downloadAll()) {
@@ -42,19 +42,19 @@ public final class MNISTDownloaderTask {
         }
     }
 
-    private static DatasetType resolveDatasetType(String[] args) {
+    private static MNISTDataset.Type resolveDatasetType(String[] args) {
         if (args != null && args.length > 0) {
             String requested = args[0].trim().toLowerCase();
             if ("mnist".equals(requested)) {
-                return DatasetType.MNIST;
+                return MNISTDataset.Type.MNIST;
             }
             if ("emnist".equals(requested)) {
-                return DatasetType.EMNIST;
+                return MNISTDataset.Type.EMNIST;
             }
             System.out.println("Unknown dataset '" + args[0] + "'. Falling back to EMNIST.");
         }
 
-        return DatasetType.EMNIST;
+        return MNISTDataset.Type.EMNIST;
     }
 
 }

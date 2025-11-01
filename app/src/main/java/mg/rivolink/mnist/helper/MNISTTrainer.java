@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import mg.rivolink.ai.Network;
 import mg.rivolink.io.NetworkIO;
+import mg.rivolink.mnist.data.MNISTDataset;
 import mg.rivolink.mnist.tool.MNISTLoader;
 
 /**
@@ -11,23 +12,10 @@ import mg.rivolink.mnist.tool.MNISTLoader;
  */
 public class MNISTTrainer {
 
-    public enum DatasetType {
-        MNIST(10, "MNIST - Digits only (0-9)"),
-        EMNIST(62, "EMNIST - Digits and Letters (0-9, A-Z, a-z)");
-
-        public final int numClasses;
-        public final String description;
-
-        DatasetType(int numClasses, String description) {
-            this.numClasses = numClasses;
-            this.description = description;
-        }
-    }
-
     private Network network;
     private final int numClasses;
 
-    public MNISTTrainer(int inputSize, int hiddenSize, DatasetType datasetType) {
+    public MNISTTrainer(int inputSize, int hiddenSize, MNISTDataset.Type datasetType) {
         this.numClasses = datasetType.numClasses;
         this.network = new Network.Builder()
             .inputSize(inputSize)
@@ -37,7 +25,7 @@ public class MNISTTrainer {
             .build();
     }
 
-    public MNISTTrainer(int inputSize, int hidden1Size, int hidden2Size, DatasetType datasetType) {
+    public MNISTTrainer(int inputSize, int hidden1Size, int hidden2Size, MNISTDataset.Type datasetType) {
         this.numClasses = datasetType.numClasses;
         this.network = new Network.Builder()
             .inputSize(inputSize)

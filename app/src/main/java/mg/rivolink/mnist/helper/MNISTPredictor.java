@@ -1,6 +1,7 @@
 package mg.rivolink.mnist.helper;
 
 import mg.rivolink.ai.Network;
+import mg.rivolink.mnist.data.MNISTDataset;
 
 /**
  * Makes predictions on new handwritten digit or letter images
@@ -8,9 +9,9 @@ import mg.rivolink.ai.Network;
 public class MNISTPredictor {
 
     private Network network;
-    private MNISTTrainer.DatasetType datasetType;
+    private MNISTDataset.Type datasetType;
 
-    public MNISTPredictor(Network network, MNISTTrainer.DatasetType datasetType) {
+    public MNISTPredictor(Network network, MNISTDataset.Type datasetType) {
         this.network = network;
         this.datasetType = datasetType;
     }
@@ -47,7 +48,7 @@ public class MNISTPredictor {
      * Converts label index to character/digit string
      */
     private String labelToString(int label) {
-        if (datasetType == MNISTTrainer.DatasetType.EMNIST) {
+        if (datasetType == MNISTDataset.Type.EMNIST) {
             if (label >= 0 && label <= 9) {
                 return String.valueOf(label);
             } else if (label >= 10 && label <= 35) {

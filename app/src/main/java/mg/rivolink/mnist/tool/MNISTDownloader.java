@@ -6,6 +6,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
 
+import mg.rivolink.mnist.data.MNISTDataset;
+
 /**
  * Downloads MNIST and EMNIST dataset
  * MNIST - Digits only (0-9)
@@ -13,43 +15,11 @@ import java.util.zip.GZIPInputStream;
  */
 public class MNISTDownloader {
 
-    private static final String MNIST_BASE_URL = "https://github.com/rivolink/mnist/raw/master/";
-    private static final String EMNIST_BASE_URL = "https://github.com/rivolink/emnist/raw/master/gzip/";
-    
-    private static final String[] MNIST_FILES = {
-        "train-images-idx3-ubyte.gz",
-        "train-labels-idx1-ubyte.gz",
-        "t10k-images-idx3-ubyte.gz",
-        "t10k-labels-idx1-ubyte.gz"
-    };
-
-    private static final String[] EMNIST_FILES = {
-        "emnist-byclass-train-images-idx3-ubyte.gz",
-        "emnist-byclass-train-labels-idx1-ubyte.gz",
-        "emnist-byclass-test-images-idx3-ubyte.gz",
-        "emnist-byclass-test-labels-idx1-ubyte.gz"
-    };
-
-    public enum DatasetType {
-        MNIST("MNIST - Digits only (0-9)", MNIST_BASE_URL, MNIST_FILES),
-        EMNIST("EMNIST - Digits and Letters (0-9, A-Z, a-z)", EMNIST_BASE_URL, EMNIST_FILES);
-
-        public final String description;
-        public final String baseUrl;
-        public final String[] files;
-
-        DatasetType(String description, String baseUrl, String[] files) {
-            this.description = description;
-            this.baseUrl = baseUrl;
-            this.files = files;
-        }
-    }
-
     private final String downloadDir;
-    private final DatasetType datasetType;
+    private final MNISTDataset.Type datasetType;
     private volatile boolean downloadCancelled = false;
 
-    public MNISTDownloader(String downloadDir, DatasetType datasetType) {
+    public MNISTDownloader(String downloadDir, MNISTDataset.Type datasetType) {
         this.downloadDir = downloadDir;
         this.datasetType = datasetType;
         new File(downloadDir).mkdirs();
@@ -293,10 +263,10 @@ public class MNISTDownloader {
         public String trainLabelsPath;
         public String testImagesPath;
         public String testLabelsPath;
-        public DatasetType datasetType;
+        public MNISTDataset.Type datasetType;
 
         public DatasetPaths(String trainImagesPath, String trainLabelsPath,
-                            String testImagesPath, String testLabelsPath, DatasetType datasetType) {
+                            String testImagesPath, String testLabelsPath, MNISTDataset.Type datasetType) {
             this.trainImagesPath = trainImagesPath;
             this.trainLabelsPath = trainLabelsPath;
             this.testImagesPath = testImagesPath;
@@ -308,7 +278,7 @@ public class MNISTDownloader {
          * Get label description for EMNIST
          */
         public String getLabelDescription() {
-            if (datasetType == DatasetType.EMNIST) {
+            if (datasetType == MNISTDataset.Type.EMNIST) {
                 return "EMNIST Labels:\n" +
                        "  0-9: Digits\n" +
                        "  10-35: Uppercase letters (A-Z)\n" +

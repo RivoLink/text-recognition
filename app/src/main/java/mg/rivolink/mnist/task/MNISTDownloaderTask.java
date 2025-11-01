@@ -1,8 +1,8 @@
 package mg.rivolink.mnist.task;
 
-import mg.rivolink.mnist.data.MNISTDownloader;
-import mg.rivolink.mnist.data.MNISTDownloader.DatasetPaths;
-import mg.rivolink.mnist.data.MNISTDownloader.DatasetType;
+import mg.rivolink.mnist.tool.MNISTDownloader;
+import mg.rivolink.mnist.tool.MNISTDownloader.DatasetPaths;
+import mg.rivolink.mnist.tool.MNISTDownloader.DatasetType;
 
 public final class MNISTDownloaderTask {
 

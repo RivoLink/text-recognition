@@ -3,8 +3,8 @@ package mg.rivolink.mnist.task;
 import java.io.IOException;
 import java.util.Locale;
 
-import mg.rivolink.mnist.data.MNISTDownloader;
-import mg.rivolink.mnist.data.MNISTLoader;
+import mg.rivolink.mnist.tool.MNISTDownloader;
+import mg.rivolink.mnist.tool.MNISTLoader;
 import mg.rivolink.mnist.helper.MNISTPredictor;
 import mg.rivolink.mnist.helper.MNISTTrainer;
 

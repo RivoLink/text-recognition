@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import mg.rivolink.ai.Network;
 import mg.rivolink.io.NetworkIO;
-import mg.rivolink.mnist.data.MNISTLoader;
+import mg.rivolink.mnist.tool.MNISTLoader;
 
 /**
  * Trains the neural network on MNIST or EMNIST data

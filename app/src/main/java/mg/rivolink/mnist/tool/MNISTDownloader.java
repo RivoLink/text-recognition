@@ -1,4 +1,4 @@
-package mg.rivolink.mnist.data;
+package mg.rivolink.mnist.tool;
 
 import java.io.*;
 import java.net.URI;

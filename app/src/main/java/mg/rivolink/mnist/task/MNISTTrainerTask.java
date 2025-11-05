@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Locale;
 
 import mg.rivolink.mnist.data.MNISTDataset;
-import mg.rivolink.mnist.tool.MNISTDownloader;
 import mg.rivolink.mnist.tool.MNISTLoader;
 import mg.rivolink.mnist.helper.MNISTPredictor;
 import mg.rivolink.mnist.helper.MNISTTrainer;
@@ -21,9 +20,7 @@ public final class MNISTTrainerTask {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         MNISTDataset.Type datasetType = resolveDatasetType(args);
-
-        MNISTDownloader downloader = createDownloader(datasetType);
-        MNISTDownloader.DatasetPaths datasetPaths = downloader.getDatasetPaths();
+        MNISTDataset.Paths datasetPaths = resolveDatasetPaths(datasetType);
 
         String modelPath = buildModelPath(datasetType);
 
@@ -93,11 +90,11 @@ public final class MNISTTrainerTask {
         return MNISTDataset.Type.EMNIST;
     }
 
-    private static MNISTDownloader createDownloader(MNISTDataset.Type datasetType) {
+    private static MNISTDataset.Paths resolveDatasetPaths(MNISTDataset.Type datasetType) {
         if (datasetType == MNISTDataset.Type.EMNIST) {
-            return new MNISTDownloader(EMNIST_DATA_DIR, MNISTDataset.Type.EMNIST);
+            return MNISTDataset.resolvePaths(EMNIST_DATA_DIR, datasetType);
         }
-        return new MNISTDownloader(MNIST_DATA_DIR, MNISTDataset.Type.MNIST);
+        return MNISTDataset.resolvePaths(MNIST_DATA_DIR, datasetType);
     }
 
     private static String buildModelPath(MNISTDataset.Type datasetType) {

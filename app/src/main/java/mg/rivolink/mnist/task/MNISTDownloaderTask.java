@@ -1,8 +1,8 @@
 package mg.rivolink.mnist.task;
 
 import mg.rivolink.mnist.data.MNISTDataset;
+import mg.rivolink.mnist.data.MNISTDataset.Paths;
 import mg.rivolink.mnist.tool.MNISTDownloader;
-import mg.rivolink.mnist.tool.MNISTDownloader.DatasetPaths;
 
 public final class MNISTDownloaderTask {
 
@@ -26,7 +26,7 @@ public final class MNISTDownloaderTask {
             downloader.verifyDataset();
             System.out.println();
 
-            final DatasetPaths paths = downloader.getDatasetPaths();
+            final Paths paths = MNISTDataset.resolvePaths(downloadDir, datasetType);
             System.out.println(paths);
             System.out.println();
 

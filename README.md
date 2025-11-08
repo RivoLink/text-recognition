@@ -20,3 +20,12 @@ Train the neural network with:
 
 Swap to MNIST training by passing `-Pdataset=mnist`  
 Model checkpoints are written to `app/models`
+
+### Evaluation
+Evaluate the neural network with:
+
+```bash
+./gradlew evaluateModel -Pdataset=emnist
+```
+
+Switch to MNIST by using `-Pdataset=mnist`

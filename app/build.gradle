@@ -87,3 +87,15 @@ task runModelTrainer(type: JavaExec) {
         args project.property('dataset')
     }
 }
+
+task runModelEvaluator(type: JavaExec) {
+    group = 'application'
+    description = 'Evaluate MNIST/EMNIST model (override with -Pdataset=mnist|emnist)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'mg.rivolink.mnist.task.MNISTEvaluatorTask'
+    dependsOn 'classes'
+
+    if (project.hasProperty('dataset')) {
+        args project.property('dataset')
+    }
+}

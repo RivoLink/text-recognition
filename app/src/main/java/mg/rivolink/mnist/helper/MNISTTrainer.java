@@ -3,6 +3,7 @@ package mg.rivolink.mnist.helper;
 import java.io.IOException;
 
 import mg.rivolink.ai.Network;
+import mg.rivolink.ai.Neuron.Activation;
 import mg.rivolink.io.NetworkIO;
 import mg.rivolink.mnist.data.MNISTDataset;
 import mg.rivolink.mnist.tool.MNISTLoader;
@@ -16,23 +17,29 @@ public class MNISTTrainer {
     private final int numClasses;
 
     public MNISTTrainer(int inputSize, int hiddenSize, MNISTDataset.Type datasetType) {
+        Activation softmax = Activation.SOFTMAX;
         this.numClasses = datasetType.numClasses;
         this.network = new Network.Builder()
             .inputSize(inputSize)
             .hiddenSize(hiddenSize)
             .outputSize(numClasses)
-            .learningRate(0.5f)
+            .outputActivation(softmax)
+            .learningRate(0.1f)
+            .maxGradient(5.0f)
             .build();
     }
 
     public MNISTTrainer(int inputSize, int hidden1Size, int hidden2Size, MNISTDataset.Type datasetType) {
+        Activation softmax = Activation.SOFTMAX;
         this.numClasses = datasetType.numClasses;
         this.network = new Network.Builder()
             .inputSize(inputSize)
             .hiddenSize(hidden1Size)
             .addHiddenLayer(hidden2Size)
             .outputSize(numClasses)
-            .learningRate(0.3f)
+            .outputActivation(softmax)
+            .learningRate(0.05f)
+            .maxGradient(5.0f)
             .build();
     }
 
@@ -58,7 +65,11 @@ public class MNISTTrainer {
                     correctPredictions++;
                 }
 
-                totalLoss += calculateMSE(prediction, target);
+                // Calculate mean squared error loss
+                // totalLoss += calculateMSE(prediction, target);
+
+                // Calculate cross-entropy loss
+                totalLoss += calculateCrossEntropy(prediction, target);
 
                 if ((i + 1) % 1000 == 0) {
                     System.out.println("  Epoch " + (epoch + 1) + "/" + epochs +
@@ -117,6 +128,8 @@ public class MNISTTrainer {
         return maxIndex;
     }
 
+    // MSE loss for regression
+    @SuppressWarnings("unused")
     private float calculateMSE(float[] prediction, float[] target) {
         float mse = 0;
         for (int i = 0; i < prediction.length; i++) {
@@ -124,6 +137,19 @@ public class MNISTTrainer {
             mse += error * error;
         }
         return mse / prediction.length;
+    }
+
+    // Cross-entropy loss for classification
+    private float calculateCrossEntropy(float[] prediction, float[] target) {
+        float loss = 0;
+        for (int i = 0; i < prediction.length; i++) {
+            if (target[i] == 1) {
+                // Add small epsilon to prevent log(0)
+                loss = -(float)Math.log(Math.max(prediction[i], 1e-7));
+                break;
+            }
+        }
+        return loss;
     }
 
     public void saveModel(String filePath) throws IOException {

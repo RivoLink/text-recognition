@@ -43,3 +43,9 @@ task trainModel(type: DefaultTask) {
     description = 'Run the model trainer (override dataset with -Pdataset=mnist|emnist)'
     dependsOn ':app:runModelTrainer'
 }
+
+task evaluateModel(type: DefaultTask) {
+    group = 'application'
+    description = 'Run the model evaluator (override dataset with -Pdataset=mnist|emnist)'
+    dependsOn ':app:runModelEvaluator'
+}

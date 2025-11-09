@@ -31,14 +31,14 @@ public final class MNISTTrainerTask {
         MNISTLoader.MNISTData trainingData =
             MNISTLoader.loadTrainingData(datasetPaths.trainImagesPath, datasetPaths.trainLabelsPath);
 
-        System.out.println("Loaded " + trainingData.images.length + " training samples");
+        System.out.println("Loaded " + trainingData.size() + " training samples");
         System.out.println();
 
         System.out.println("Loading test data...");
         MNISTLoader.MNISTData testData =
             MNISTLoader.loadTestData(datasetPaths.testImagesPath, datasetPaths.testLabelsPath);
 
-        System.out.println("Loaded " + testData.images.length + " test samples");
+        System.out.println("Loaded " + testData.size() + " test samples");
         System.out.println();
 
         MNISTTrainer trainer;
@@ -66,12 +66,14 @@ public final class MNISTTrainerTask {
         MNISTPredictor predictor = new MNISTPredictor(trainer.getNetwork(), datasetType);
 
         System.out.println("Making predictions on test samples:");
-        for (int i = 0; i < 5; i++) {
-            MNISTPredictor.PredictionResult result =
-                predictor.predictWithConfidence(testData.images[i]);
+        int previewSamples = Math.min(5, testData.size());
+        float[] previewBuffer = new float[testData.getPixelCount()];
+        for (int i = 0; i < previewSamples; i++) {
+            float[] sample = testData.getImageAsFloat(i, previewBuffer);
+            MNISTPredictor.PredictionResult result = predictor.predictWithConfidence(sample);
 
             System.out.println("Sample " + i + ": " + result +
-                               " (Actual: " + testData.labels[i] + ")");
+                               " (Actual: " + testData.getLabel(i) + ")");
         }
     }
 

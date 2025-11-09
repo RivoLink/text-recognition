@@ -44,7 +44,8 @@ public class MNISTTrainer {
     }
 
     public void train(MNISTLoader.MNISTData trainingData, int epochs) {
-        int dataSize = trainingData.images.length;
+        int dataSize = trainingData.size();
+        float[] imageBuffer = new float[trainingData.getPixelCount()];
 
         System.out.println("Starting training with " + dataSize + " samples for " + epochs + " epochs...");
 
@@ -53,8 +54,8 @@ public class MNISTTrainer {
             int correctPredictions = 0;
 
             for (int i = 0; i < dataSize; i++) {
-                float[] image = trainingData.images[i];
-                int label = trainingData.labels[i];
+                float[] image = trainingData.getImageAsFloat(i, imageBuffer);
+                int label = trainingData.getLabel(i);
                 float[] target = MNISTLoader.toOneHotFloat(label, numClasses);
 
                 network.train(image, target);
@@ -87,13 +88,14 @@ public class MNISTTrainer {
 
     public float evaluate(MNISTLoader.MNISTData testData) {
         int correctPredictions = 0;
-        int totalSamples = testData.images.length;
+        int totalSamples = testData.size();
+        float[] imageBuffer = new float[testData.getPixelCount()];
 
         System.out.println("Evaluating on " + totalSamples + " test samples...");
 
         for (int i = 0; i < totalSamples; i++) {
-            float[] image = testData.images[i];
-            int label = testData.labels[i];
+            float[] image = testData.getImageAsFloat(i, imageBuffer);
+            int label = testData.getLabel(i);
 
             float[] prediction = network.predict(image);
             int predictedLabel = argMax(prediction);

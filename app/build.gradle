@@ -57,9 +57,9 @@ task rebuildNeuralNetwork(type: Exec) {
     workingDir '../libs/neural-network'
     
     if (System.properties['os.name'].toLowerCase().contains('windows')) {
-        commandLine 'bash', 'scripts/build.sh', '--clean', '--target=11'
+        commandLine 'bash', 'scripts/build.sh', '--clean', '--target=21'
     } else {
-        commandLine './scripts/build.sh', '--clean', '--target=11'
+        commandLine './scripts/build.sh', '--clean', '--target=21'
     }
 }
 

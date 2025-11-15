@@ -89,15 +89,29 @@ public class ImageSegmenter {
         List<CharacterBound> characters = new ArrayList<>();
 
         for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+            int x = 0;
+            while (x < width) {
                 int index = y * width + x;
 
-                if (!visited[index] && isForeground(image[index])) {
+                if (visited[index]) {
+                    // Skip visited regions faster
+                    while (x < width && visited[y * width + x]) {
+                        x++;
+                    }
+                    continue;
+                }
+
+                if (isForeground(image[index])) {
                     CharacterBound bound = findConnectedComponent(image, visited, x, y, width, height);
 
                     if (bound != null && bound.isValidSize()) {
                         characters.add(bound);
                     }
+
+                    // Skip directly to end of detected character
+                    x = Math.min(bound.getX() + bound.getWidth(), width);
+                } else {
+                    x++;
                 }
             }
         }

@@ -29,3 +29,14 @@ Evaluate the neural network with:
 ```
 
 Switch to MNIST by using `-Pdataset=mnist`
+
+### Segmentation
+Segment an image with:
+
+```bash
+./gradlew segmentImage -Pimage=<path>
+
+# examples
+./gradlew segmentImage -Pimage=images/explain.png
+./gradlew segmentImage -Pimage=images/reproduce.jpeg
+```

@@ -99,3 +99,15 @@ task runModelEvaluator(type: JavaExec) {
         args project.property('dataset')
     }
 }
+
+task runImageSegmenter(type: JavaExec) {
+    group = 'application'
+    description = 'Segments image and shows detected characters (override with -Pimage=<path>)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'mg.rivolink.image.demo.ImageSegmenterDemo'
+    dependsOn 'classes'
+
+    if ((args == null || args.isEmpty()) && project.hasProperty('image')) {
+        args project.property('image')
+    }
+}

@@ -49,3 +49,20 @@ task evaluateModel(type: DefaultTask) {
     description = 'Run the model evaluator (override dataset with -Pdataset=mnist|emnist)'
     dependsOn ':app:runModelEvaluator'
 }
+
+tasks.register("segmentImage") {
+    group = 'application'
+    description = 'Run the image segmenter (override image with -Pimage=<path>)'
+    dependsOn ':app:runImageSegmenter'
+
+    if (project.hasProperty('image')) {
+        def path = project.property('image') as String
+        def file = new File(path)
+
+        file = file.isAbsolute() ? file : new File(project.projectDir, path);
+
+        project(":app").tasks.named("runImageSegmenter").configure {
+            args = [file.absolutePath]
+        }
+    }
+}

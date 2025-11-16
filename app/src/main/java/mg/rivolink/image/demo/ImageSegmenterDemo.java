@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -55,8 +56,8 @@ public final class ImageSegmenterDemo {
         // Convert to grayscale for display purposes
         float[] grayscaleImage = ImageSegmenter.convertToGrayscale(image);
 
-        displayCharacterDetails(characters);
-        displayCharacterSamples(grayscaleImage, width, height, characters);
+        displayDetails(characters);
+        displayCharacters(grayscaleImage, width, height, characters);
         displayStatistics(characters, width, height);
     }
 
@@ -85,70 +86,155 @@ public final class ImageSegmenterDemo {
         return lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg");
     }
 
-    private static void displayCharacterDetails(List<CharacterBound> characters) {
-        System.out.println("Detected character regions:");
-        System.out.println();
-        System.out.println("  No.    X      Y      Width  Height  Area");
-        System.out.println("  ---  -----  -----  ------  ------  ------");
-
-        for (int i = 0; i < characters.size(); i++) {
-            CharacterBound bound = characters.get(i);
-            int area = bound.getWidth() * bound.getHeight();
-
-            System.out.printf("  %3d  %5d  %5d  %6d  %6d  %6d\n",
-                i + 1,
-                bound.getX(),
-                bound.getY(),
-                bound.getWidth(),
-                bound.getHeight(),
-                area
-            );
+    private static void displayDetails(List<CharacterBound> characters) {
+        if (characters.isEmpty()) {
+            return;
         }
 
+        System.out.println("Character details table:");
         System.out.println();
+
+        int maxChars = characters.size();
+        int colsPerRow = 5;
+
+        // Pre-calculate max widths for better alignment
+        int maxPosWidth = 0;
+        int maxSizeWidth = 0;
+
+        for (CharacterBound bound : characters) {
+            String pos = "(" + bound.getX() + "," + bound.getY() + ")";
+            String size = bound.getWidth() + "x" + bound.getHeight();
+            maxPosWidth = Math.max(maxPosWidth, pos.length());
+            maxSizeWidth = Math.max(maxSizeWidth, size.length());
+        }
+
+        int colWidth = Math.max(maxPosWidth, Math.max(maxSizeWidth, 6)) + 2;
+        String rowLabel = "%-5s ";
+
+        for (int startIdx = 0; startIdx < maxChars; startIdx += colsPerRow) {
+            int endIdx = Math.min(startIdx + colsPerRow, maxChars);
+
+            // Header row (No.)
+            System.out.printf(rowLabel, "No.");
+            for (int i = startIdx; i < endIdx; i++) {
+                System.out.printf("%-" + colWidth + "s", String.valueOf(i + 1));
+            }
+            System.out.println();
+
+            // Separator
+            System.out.printf(rowLabel, "-----");
+            for (int i = startIdx; i < endIdx; i++) {
+                // Print dashes for column width - 1
+                for (int j = 0; j < colWidth - 1; j++) {
+                    System.out.print("-");
+                }
+                System.out.print(" ");
+            }
+            System.out.println();
+
+            // Position (x,y)
+            System.out.printf(rowLabel, "Pos");
+            for (int i = startIdx; i < endIdx; i++) {
+                CharacterBound bound = characters.get(i);
+                String pos = "(" + bound.getX() + "," + bound.getY() + ")";
+                System.out.printf("%-" + colWidth + "s", pos);
+            }
+            System.out.println();
+
+            // Size WxH
+            System.out.printf(rowLabel, "Size");
+            for (int i = startIdx; i < endIdx; i++) {
+                CharacterBound bound = characters.get(i);
+                String size = bound.getWidth() + "x" + bound.getHeight();
+                System.out.printf("%-" + colWidth + "s", size);
+            }
+            System.out.println();
+
+            // Area
+            System.out.printf(rowLabel, "Area");
+            for (int i = startIdx; i < endIdx; i++) {
+                CharacterBound bound = characters.get(i);
+                int area = bound.getWidth() * bound.getHeight();
+                System.out.printf("%-" + colWidth + "d", area);
+            }
+            System.out.println();
+            System.out.println();
+        }
     }
 
-    private static void displayCharacterSamples(
+    private static void displayCharacters(
         float[] image, int width, int height, List<CharacterBound> characters
     ) {
-        int samplesToShow = Math.min(3, characters.size());
+        if (characters.isEmpty()) {
+            return;
+        }
 
-        System.out.println("Character samples (first " + samplesToShow + "):");
+        final int DISPLAY_SIZE = 10;
+        System.out.println("All characters (10x10 each):");
         System.out.println();
 
-        for (int i = 0; i < samplesToShow; i++) {
-            CharacterBound bound = characters.get(i);
-            System.out.println("Character " + (i + 1) + ":");
-            System.out.println("  Position: (" + bound.getX() + ", " + bound.getY() + ")");
-            System.out.println("  Size: " + bound.getWidth() + " x " + bound.getHeight());
-            System.out.println();
-
-            float[] normalized = ImageSegmenter.extractAndNormalize(image, width, height, bound);
-
-            System.out.println("  Normalized to 28x28:");
-            displayAsASCII(normalized, 28, 28);
-            System.out.println();
+        // Extract and normalize all characters to 10x10
+        List<float[]> normalizedChars = new ArrayList<>();
+        for (CharacterBound bound : characters) {
+            float[] normalized = resizeCharacter(image, width, height, bound, DISPLAY_SIZE);
+            normalizedChars.add(normalized);
         }
 
-        if (characters.size() > samplesToShow) {
-            System.out.println("  ... and " + (characters.size() - samplesToShow) + " more");
-            System.out.println();
-        }
-    }
+        // Display horizontally, row by row
+        for (int row = 0; row < DISPLAY_SIZE; row++) {
+            for (int i = 0; i < normalizedChars.size(); i++) {
+                float[] charPixels = normalizedChars.get(i);
 
-    private static void displayAsASCII(float[] pixels, int width, int height) {
-        char[] asciiChars = {' ', '.', ':', '-', '=', '+', '*', '#', '@'};
+                // Print one row of this character
+                for (int col = 0; col < DISPLAY_SIZE; col++) {
+                    float value = charPixels[row * DISPLAY_SIZE + col];
+                    System.out.print(getASCIIChar(value));
+                }
 
-        for (int y = 0; y < height; y++) {
-            System.out.print("  ");
-            for (int x = 0; x < width; x++) {
-                float value = pixels[y * width + x];
-                int index = (int)(value * (asciiChars.length - 1));
-                index = Math.max(0, Math.min(asciiChars.length - 1, index));
-                System.out.print(asciiChars[index]);
+                // Add separator between characters
+                System.out.print("  ");
             }
             System.out.println();
         }
+
+        // Print character numbers below
+        System.out.println();
+        for (int i = 0; i < normalizedChars.size(); i++) {
+            System.out.printf("%-12s", "Char " + (i + 1));
+        }
+        System.out.println();
+        System.out.println();
+    }
+
+    private static float[] resizeCharacter(
+        float[] image, int imageWidth, int imageHeight, CharacterBound bound, int targetSize
+    ) {
+        float[] result = new float[targetSize * targetSize];
+        float scaleX = (float) bound.getWidth() / targetSize;
+        float scaleY = (float) bound.getHeight() / targetSize;
+
+        for (int ty = 0; ty < targetSize; ty++) {
+            for (int tx = 0; tx < targetSize; tx++) {
+                int sx = bound.getX() + (int)(tx * scaleX);
+                int sy = bound.getY() + (int)(ty * scaleY);
+
+                if (sx >= 0 && sx < imageWidth && sy >= 0 && sy < imageHeight) {
+                    int index = sy * imageWidth + sx;
+                    if (index >= 0 && index < image.length) {
+                        result[ty * targetSize + tx] = image[index];
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private static char getASCIIChar(float value) {
+        char[] asciiChars = {' ', '.', ':', '-', '=', '+', '*', '#', '@'};
+        int index = (int)(value * (asciiChars.length - 1));
+        index = Math.max(0, Math.min(asciiChars.length - 1, index));
+        return asciiChars[index];
     }
 
     private static void displayStatistics(

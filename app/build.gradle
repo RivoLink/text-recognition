@@ -111,3 +111,15 @@ task runImageSegmenter(type: JavaExec) {
         args project.property('image')
     }
 }
+
+task runImagePreprocessor(type: JavaExec) {
+    group = 'application'
+    description = 'Pre-process image by applying morphological operations (override with -Pimage=<path>)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'mg.rivolink.image.demo.ImagePreprocessorDemo'
+    dependsOn 'classes'
+
+    if ((args == null || args.isEmpty()) && project.hasProperty('image')) {
+        args project.property('image')
+    }
+}

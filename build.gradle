@@ -66,3 +66,20 @@ tasks.register("segmentImage") {
         }
     }
 }
+
+tasks.register("preprocessImage") {
+    group = 'application'
+    description = 'Run the image preprocessor (override image with -Pimage=<path>)'
+    dependsOn ':app:runImagePreprocessor'
+
+    if (project.hasProperty('image')) {
+        def path = project.property('image') as String
+        def file = new File(path)
+
+        file = file.isAbsolute() ? file : new File(project.projectDir, path);
+
+        project(":app").tasks.named("runImagePreprocessor").configure {
+            args = [file.absolutePath]
+        }
+    }
+}

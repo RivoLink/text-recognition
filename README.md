@@ -40,3 +40,14 @@ Segment an image with:
 ./gradlew segmentImage -Pimage=images/explain.png
 ./gradlew segmentImage -Pimage=images/reproduce.jpeg
 ```
+
+### Pre-processing
+Pre-process before segment an image with:
+
+```bash
+./gradlew preprocessImage -Pimage=<path>
+
+# examples
+./gradlew preprocessImage -Pimage=images/explain.png
+./gradlew preprocessImage -Pimage=images/reproduce.jpeg
+```

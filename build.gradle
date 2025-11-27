@@ -83,3 +83,9 @@ tasks.register("preprocessImage") {
         }
     }
 }
+
+task demoLanguageModel(type: DefaultTask) {
+    group = 'application'
+    description = 'Run the language model demo'
+    dependsOn ':app:runLanguageModelDemo'
+}

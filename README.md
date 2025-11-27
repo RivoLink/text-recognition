@@ -51,3 +51,10 @@ Pre-process before segment an image with:
 ./gradlew preprocessImage -Pimage=images/explain.png
 ./gradlew preprocessImage -Pimage=images/reproduce.jpeg
 ```
+
+### Language Model
+Run the language model demo with:
+
+```bash
+./gradlew demoLanguageModel
+```

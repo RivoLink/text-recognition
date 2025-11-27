@@ -123,3 +123,11 @@ task runImagePreprocessor(type: JavaExec) {
         args project.property('image')
     }
 }
+
+task runLanguageModelDemo(type: JavaExec) {
+    group = 'application'
+    description = 'Demo of a language model for word validation and spelling correction'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'mg.rivolink.lang.demo.LanguageModelDemo'
+    dependsOn 'classes'
+}

@@ -1,4 +1,4 @@
-## Text Recognition
+## Text Recognition v1.0.0
 A lightweight neural network project for recognizing handwritten text using the MNIST dataset.
 
 ### Dataset

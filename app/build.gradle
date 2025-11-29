@@ -131,3 +131,18 @@ task runLanguageModelDemo(type: JavaExec) {
     mainClass = 'mg.rivolink.lang.demo.LanguageModelDemo'
     dependsOn 'classes'
 }
+
+tasks.register("runTextRecognition", JavaExec) {
+    group = 'application'
+    description = 'Recognize text from image (use -Pdataset=mnist|emnist, default emnist; -Pimage=<path> required)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'mg.rivolink.Main'
+    dependsOn 'classes'
+
+    if ((args == null || args.isEmpty()) && project.hasProperty('image')) {
+        def dataset = project.hasProperty('dataset') ? project.property('dataset') : 'emnist'
+        def image = project.property('image') as String
+
+        args = [dataset, image]
+    }
+}

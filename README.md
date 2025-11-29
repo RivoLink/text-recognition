@@ -58,3 +58,18 @@ Run the language model demo with:
 ```bash
 ./gradlew demoLanguageModel
 ```
+
+### Text Recognition
+Run the end-to-end text recognition (defaults to EMNIST):
+
+```bash
+./gradlew recognizeText -Pimage=<path>
+```
+
+Switch to MNIST by passing `-Pdataset=mnist`
+
+```bash
+# example
+./gradlew recognizeText -Pimage=images/explain.png
+./gradlew recognizeText -Pdataset=mnist -Pimage=images/digits.png
+```

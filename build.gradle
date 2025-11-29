@@ -89,3 +89,21 @@ task demoLanguageModel(type: DefaultTask) {
     description = 'Run the language model demo'
     dependsOn ':app:runLanguageModelDemo'
 }
+
+tasks.register("recognizeText") {
+    group = 'application'
+    description = 'Run text recognition (use -Pdataset=mnist|emnist, default emnist; -Pimage=<path> required)'
+    dependsOn ':app:runTextRecognition'
+
+    if (project.hasProperty('image')) {
+        def dataset = project.hasProperty('dataset') ? project.property('dataset') : 'emnist'
+        def path = project.property('image') as String
+
+        def file = new File(path)
+        file = file.isAbsolute() ? file : new File(project.projectDir, path)
+
+        project(":app").tasks.named("runTextRecognition").configure {
+            args = [dataset, file.absolutePath]
+        }
+    }
+}

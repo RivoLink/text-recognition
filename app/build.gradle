@@ -100,6 +100,21 @@ task runModelEvaluator(type: JavaExec) {
     }
 }
 
+task runModelRetrainer(type: JavaExec) {
+    group = 'application'
+    description = 'Resume training an existing MNIST/EMNIST model (override with -Pdataset=mnist|emnist, -Pepochs=<n>)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'mg.rivolink.mnist.task.MNISTRetrainerTask'
+    dependsOn 'classes'
+
+    if (project.hasProperty('dataset')) {
+        args project.property('dataset')
+    }
+    if (project.hasProperty('epochs')) {
+        args project.property('epochs')
+    }
+}
+
 task runImageSegmenter(type: JavaExec) {
     group = 'application'
     description = 'Segments image and shows detected characters (override with -Pimage=<path>)'

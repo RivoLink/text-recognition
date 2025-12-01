@@ -30,6 +30,16 @@ Evaluate the neural network with:
 
 Switch to MNIST by using `-Pdataset=mnist`
 
+### Retraining
+Resume training of the neural network with:
+
+```bash
+./gradlew retrainModel -Pdataset=emnist -Pepochs=2
+```
+
+Swap to MNIST training by passing `-Pdataset=mnist`  
+Model must already exist in `app/models` to retrain it.
+
 ### Segmentation
 Segment an image with:
 

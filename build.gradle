@@ -50,6 +50,12 @@ task evaluateModel(type: DefaultTask) {
     dependsOn ':app:runModelEvaluator'
 }
 
+task retrainModel(type: DefaultTask) {
+    group = 'application'
+    description = 'Resume training an existing model (override dataset with -Pdataset=mnist|emnist, -Pepochs=<n>)'
+    dependsOn ':app:runModelRetrainer'
+}
+
 tasks.register("segmentImage") {
     group = 'application'
     description = 'Run the image segmenter (override image with -Pimage=<path>)'

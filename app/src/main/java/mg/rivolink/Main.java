@@ -38,6 +38,8 @@ public final class Main {
         String modelPath = buildModelPath(datasetType);
         ensureModelExists(modelPath, datasetType);
 
+        String grayscalePath = buildGrayscalePath(imagePath);
+
         System.out.println("=== Text Recognition Demo ===");
         System.out.println();
 
@@ -65,6 +67,13 @@ public final class Main {
         startNs = System.nanoTime();
         grayscale = ImagePreprocessor.preprocessImage(grayscale, width, height, false);
         System.out.println("Pre-processing complete in " + elapsedMs(startNs) + " ms.");
+        System.out.println();
+
+        System.out.println("Saving grayscale image...");
+        startNs = System.nanoTime();
+        ImageSegmenter.grayscaleToImage(grayscale, width, height, grayscalePath);
+        System.out.println("Saving complete in " + elapsedMs(startNs) + " ms.");
+        System.out.println("Grayscale image saved at: " + grayscalePath);
         System.out.println();
 
         System.out.println("Segmenting characters...");
@@ -151,6 +160,21 @@ public final class Main {
     private static String buildModelPath(MNISTDataset.Type datasetType) {
         String modelFile = datasetType.name().toLowerCase(Locale.ROOT) + "-model.bin";
         return MODEL_DIR + modelFile;
+    }
+
+    private static String buildGrayscalePath(String rgbPath) {
+        if (rgbPath == null || rgbPath.isBlank()) {
+            throw new IllegalArgumentException("RGB image path cannot be null or blank");
+        }
+
+        int dotIndex = rgbPath.lastIndexOf('.');
+        if (dotIndex <= rgbPath.lastIndexOf(File.separatorChar) || dotIndex == -1) {
+            return rgbPath + "-grayscale.png";
+        }
+
+        String base = rgbPath.substring(0, dotIndex);
+        String extension = rgbPath.substring(dotIndex);
+        return base + "-grayscale" + extension;
     }
 
     private static long elapsedMs(long startNs) {

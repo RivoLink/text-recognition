@@ -1,7 +1,11 @@
 package mg.rivolink.image.helper;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
+
+import javax.imageio.ImageIO;
 
 /**
  * Segments handwritten text images into individual characters
@@ -153,6 +157,50 @@ public class ImageSegmenter {
     }
 
     /**
+     * Converts a normalized grayscale array back to an image and saves it to disk
+     * Inverse of convertToGrayscale: values in [0,1] where dark text = high value
+     *
+     * @param grayscale Flattened grayscale array (row-major order)
+     * @param width Image width in pixels
+     * @param height Image height in pixels
+     * @param path Destination file path (extension determines format)
+     * @return BufferedImage that was written to disk
+     * @throws IllegalArgumentException if inputs are invalid
+     * @throws IOException if writing the image fails
+     */
+    public static BufferedImage grayscaleToImage(float[] grayscale, int width, int height, String path)
+        throws IOException {
+
+        validateInput(grayscale, width, height);
+        if (path == null || path.isBlank()) {
+            throw new IllegalArgumentException("Output path cannot be null or blank");
+        }
+
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                float normalized = grayscale[y * width + x];
+                float clamped = Math.max(0f, Math.min(1f, normalized));
+
+                // Reverse inversion: grayscale 0 = white background, 1 = black foreground
+                int gray255 = Math.round((1.0f - clamped) * 255.0f);
+                int rgb = (gray255 << 16) | (gray255 << 8) | gray255;
+                image.setRGB(x, y, rgb);
+            }
+        }
+
+        File outputFile = new File(path);
+        String format = extractFormat(path);
+
+        if (!ImageIO.write(image, format, outputFile)) {
+            throw new IOException("No appropriate writer found for format: " + format);
+        }
+
+        return image;
+    }
+
+    /**
      * Extracts and normalizes a character region to MNIST/EMNIST format (28x28)
      *
      * @param image Source image array
@@ -226,6 +274,14 @@ public class ImageSegmenter {
 
     private static boolean isValidCoordinate(int x, int y, int width, int height) {
         return x >= 0 && x < width && y >= 0 && y < height;
+    }
+
+    private static String extractFormat(String path) {
+        int dotIndex = path.lastIndexOf('.');
+        if (dotIndex == -1 || dotIndex == path.length() - 1) {
+            return "png";
+        }
+        return path.substring(dotIndex + 1);
     }
 
     /**

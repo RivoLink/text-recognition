@@ -80,6 +80,7 @@ public class MNISTLoader {
         return new MNISTData(imagesData.pixels, labels, imagesData.pixelCount);
     }
 
+    @SuppressWarnings("unused")
     private static int[] readLabels(String filePath) throws IOException {
         try (DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath)))) {
             int magicNumber = dis.readInt();
@@ -93,6 +94,7 @@ public class MNISTLoader {
         }
     }
 
+    @SuppressWarnings("unused")
     private static MNISTImages readImages(String filePath, int numImagesRequested) throws IOException {
         try (DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath)))) {
             int magicNumber = dis.readInt();

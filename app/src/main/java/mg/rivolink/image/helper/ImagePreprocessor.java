@@ -1,7 +1,5 @@
 package mg.rivolink.image.helper;
 
-import java.awt.image.BufferedImage;
-
 /**
  * Provides morphological operations for image preprocessing
  *

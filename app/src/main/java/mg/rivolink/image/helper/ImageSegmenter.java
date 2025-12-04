@@ -19,6 +19,7 @@ public class ImageSegmenter {
     private static final int SAME_LINE_TOLERANCE = 10;
 
     private static final int TARGET_SIZE = 28;
+    private static final int TARGET_PADDING = 2;
     private static final float FOREGROUND_THRESHOLD = 0.1f;
 
     // 8-connectivity offsets
@@ -305,13 +306,20 @@ public class ImageSegmenter {
         float[] image, int imageWidth, int imageHeight, CharacterBound bound, int targetSize
     ) {
         float[] result = new float[targetSize * targetSize];
-        float scaleX = (float) bound.width / targetSize;
-        float scaleY = (float) bound.height / targetSize;
+        int innerWidth = targetSize - 2 * TARGET_PADDING;
+        int innerHeight = targetSize - 2 * TARGET_PADDING;
 
-        for (int ty = 0; ty < targetSize; ty++) {
-            for (int tx = 0; tx < targetSize; tx++) {
-                float sx = bound.x + tx * scaleX;
-                float sy = bound.y + ty * scaleY;
+        if (innerWidth <= 0 || innerHeight <= 0) {
+            return result;
+        }
+
+        float scaleX = (float) bound.width / innerWidth;
+        float scaleY = (float) bound.height / innerHeight;
+
+        for (int ty = TARGET_PADDING; ty < TARGET_PADDING + innerHeight; ty++) {
+            for (int tx = TARGET_PADDING; tx < TARGET_PADDING + innerWidth; tx++) {
+                float sx = bound.x + (tx - TARGET_PADDING) * scaleX;
+                float sy = bound.y + (ty - TARGET_PADDING) * scaleY;
 
                 result[ty * targetSize + tx] = bilinearInterpolate(image, imageWidth, imageHeight, sx, sy);
             }

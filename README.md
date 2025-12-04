@@ -1,7 +1,7 @@
-## Text Recognition v1.0.0
+# Text Recognition v1.0.0
 A lightweight neural network project for recognizing handwritten text using the MNIST dataset.
 
-### Dataset
+## Dataset Download
 Run the dataset downloader task via:
 
 ```bash
@@ -11,8 +11,8 @@ Run the dataset downloader task via:
 Switch to MNIST by using `-Pdataset=mnist`  
 The downloaded dataset is stored under `app/data`
 
-### Training
-Train the neural network with:
+## Model Training
+Train the model with:
 
 ```bash
 ./gradlew trainModel -Pdataset=emnist
@@ -21,8 +21,8 @@ Train the neural network with:
 Swap to MNIST training by passing `-Pdataset=mnist`  
 Model checkpoints are written to `app/models`
 
-### Evaluation
-Evaluate the neural network with:
+## Model Evaluation
+Evaluate the model with:
 
 ```bash
 ./gradlew evaluateModel -Pdataset=emnist
@@ -30,8 +30,8 @@ Evaluate the neural network with:
 
 Switch to MNIST by using `-Pdataset=mnist`
 
-### Retraining
-Resume training of the neural network with:
+## Model Retraining
+Resume training of the model with:
 
 ```bash
 ./gradlew retrainModel -Pdataset=emnist -Pepochs=2
@@ -40,7 +40,7 @@ Resume training of the neural network with:
 Swap to MNIST training by passing `-Pdataset=mnist`  
 Model must already exist in `app/models` to retrain it.
 
-### Segmentation
+## Image Segmentation
 Segment an image with:
 
 ```bash
@@ -51,8 +51,8 @@ Segment an image with:
 ./gradlew segmentImage -Pimage=images/reproduce.jpeg
 ```
 
-### Pre-processing
-Pre-process before segment an image with:
+## Image Pre-processing
+Pre-process before segmenting an image with:
 
 ```bash
 ./gradlew preprocessImage -Pimage=<path>
@@ -62,14 +62,14 @@ Pre-process before segment an image with:
 ./gradlew preprocessImage -Pimage=images/reproduce.jpeg
 ```
 
-### Language Model
+## Language Model Demo
 Run the language model demo with:
 
 ```bash
 ./gradlew demoLanguageModel
 ```
 
-### Text Recognition
+## Text Recognition Pipeline
 Run the end-to-end text recognition (defaults to EMNIST):
 
 ```bash

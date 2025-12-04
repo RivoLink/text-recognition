@@ -7,7 +7,7 @@ class MainTest {
 
     @Test
     void appHasAGreeting() {
-        assertNotNull(new Main().getClass(), "NO class error.");
+        assertNotNull(Main.class, "NO class error.");
     }
 
 }

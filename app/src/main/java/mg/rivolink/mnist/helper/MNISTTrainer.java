@@ -1,6 +1,7 @@
 package mg.rivolink.mnist.helper;
 
 import java.io.IOException;
+import java.util.Random;
 
 import mg.rivolink.ai.Network;
 import mg.rivolink.ai.Neuron.Activation;
@@ -13,8 +14,13 @@ import mg.rivolink.mnist.tool.MNISTLoader;
  */
 public class MNISTTrainer {
 
+    private static final float MAX_GRADIENT = 0.05f;
+    private static final float LEARNING_RATE = 0.01f;
+
     private Network network;
+
     private final int numClasses;
+    private final Random random = new Random();
 
     public MNISTTrainer(int inputSize, int hiddenSize, MNISTDataset.Type datasetType) {
         Activation softmax = Activation.SOFTMAX;
@@ -24,8 +30,8 @@ public class MNISTTrainer {
             .hiddenSize(hiddenSize)
             .outputSize(numClasses)
             .outputActivation(softmax)
-            .learningRate(0.1f)
-            .maxGradient(5.0f)
+            .learningRate(LEARNING_RATE)
+            .maxGradient(MAX_GRADIENT)
             .build();
     }
 
@@ -38,8 +44,8 @@ public class MNISTTrainer {
             .addHiddenLayer(hidden2Size)
             .outputSize(numClasses)
             .outputActivation(softmax)
-            .learningRate(0.05f)
-            .maxGradient(5.0f)
+            .learningRate(LEARNING_RATE)
+            .maxGradient(MAX_GRADIENT)
             .build();
     }
 
@@ -47,13 +53,26 @@ public class MNISTTrainer {
         int dataSize = trainingData.size();
         float[] imageBuffer = new float[trainingData.getPixelCount()];
 
+        int[] indices = new int[dataSize];
+        for (int idx = 0; idx < dataSize; idx++) {
+            indices[idx] = idx;
+        }
+
         System.out.println("Starting training with " + dataSize + " samples for " + epochs + " epochs...");
 
         for (int epoch = 0; epoch < epochs; epoch++) {
             float totalLoss = 0;
             int correctPredictions = 0;
 
-            for (int i = 0; i < dataSize; i++) {
+            // learning-rate decay per epoch
+            network.alpha = (float)(LEARNING_RATE * Math.pow(0.95, epoch));
+
+            // shuffle dataset indices
+            indices = shuffleIndices(indices);
+
+            for (int idx = 0; idx < dataSize; idx++) {
+                int i = indices[idx];
+
                 float[] image = trainingData.getImageAsFloat(i, imageBuffer);
                 int label = trainingData.getLabel(i);
                 float[] target = MNISTLoader.toOneHotFloat(label, numClasses);
@@ -128,6 +147,17 @@ public class MNISTTrainer {
             }
         }
         return maxIndex;
+    }
+
+    // Fisher-Yates shuffle
+    private int[] shuffleIndices(int[] indices) {
+        for (int i = indices.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            int tmp = indices[i];
+            indices[i] = indices[j];
+            indices[j] = tmp;
+        }
+        return indices;
     }
 
     // MSE loss for regression

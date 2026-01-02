@@ -1,0 +1,60 @@
+package mg.rivolink.mnist.task;
+
+import mg.rivolink.mnist.data.MNISTDatasetFinetune;
+import mg.rivolink.mnist.data.MNISTDatasetFinetune.Paths;
+import mg.rivolink.mnist.tool.MNISTDownloader;
+
+public final class MNISTFinetuneDownloaderTask {
+
+    private static final String MNIST_DATA_DIR = "data/mnist-finetune";
+    private static final String EMNIST_DATA_DIR = "data/emnist-finetune";
+
+    private MNISTFinetuneDownloaderTask() {
+        // utility class
+    }
+
+    public static void main(String[] args) {
+        System.out.println("=== Finetune Dataset Downloader ===");
+        System.out.println();
+
+        MNISTDatasetFinetune.Type datasetType = resolveDatasetType(args);
+        final String downloadDir = datasetType == MNISTDatasetFinetune.Type.EMNIST ? EMNIST_DATA_DIR : MNIST_DATA_DIR;
+        final MNISTDownloader downloader = new MNISTDownloader(downloadDir, datasetType);
+
+        if (downloader.downloadAll()) {
+            System.out.println();
+            downloader.verifyDataset();
+            System.out.println();
+
+            final Paths paths = MNISTDatasetFinetune.resolvePaths(downloadDir, datasetType);
+            System.out.println(paths);
+            System.out.println();
+
+            System.out.println("Ready to train! Use these paths:");
+            System.out.println("  trainImagesPath: " + paths.trainImagesPath);
+            System.out.println("  trainLabelsPath: " + paths.trainLabelsPath);
+            System.out.println("  testImagesPath: " + paths.testImagesPath);
+            System.out.println("  testLabelsPath: " + paths.testLabelsPath);
+        } else {
+            System.out.println();
+            System.err.println("Download failed. Please check your internet connection.");
+            System.exit(1);
+        }
+    }
+
+    private static MNISTDatasetFinetune.Type resolveDatasetType(String[] args) {
+        if (args != null && args.length > 0) {
+            String requested = args[0].trim().toLowerCase();
+            if ("mnist".equals(requested)) {
+                return MNISTDatasetFinetune.Type.MNIST;
+            }
+            if ("emnist".equals(requested)) {
+                return MNISTDatasetFinetune.Type.EMNIST;
+            }
+            System.out.println("Unknown dataset '" + args[0] + "'. Falling back to EMNIST.");
+        }
+
+        return MNISTDatasetFinetune.Type.EMNIST;
+    }
+
+}

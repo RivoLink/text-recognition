@@ -11,6 +11,15 @@ Run the dataset downloader task via:
 Switch to MNIST by using `-Pdataset=mnist`  
 The downloaded dataset is stored under `app/data`
 
+For the finetune dataset variant:
+
+```bash
+./gradlew downloadFinetuneDataset -Pdataset=emnist
+```
+
+Switch to MNIST by using `-Pdataset=mnist`  
+The finetune dataset is stored under `app/data`
+
 ## Model Training
 Train the model with:
 

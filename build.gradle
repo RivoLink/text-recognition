@@ -38,6 +38,12 @@ task downloadDataset(type: DefaultTask) {
     dependsOn ':app:runDatasetDownloader'
 }
 
+task downloadFinetuneDataset(type: DefaultTask) {
+    group = 'application'
+    description = 'Run the finetune dataset downloader (override dataset with -Pdataset=mnist|emnist)'
+    dependsOn ':app:runFinetuneDatasetDownloader'
+}
+
 task trainModel(type: DefaultTask) {
     group = 'application'
     description = 'Run the model trainer (override dataset with -Pdataset=mnist|emnist)'

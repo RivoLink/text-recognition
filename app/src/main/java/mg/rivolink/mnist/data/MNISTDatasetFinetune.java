@@ -2,33 +2,33 @@ package mg.rivolink.mnist.data;
 
 import java.io.File;
 
-public class MNISTDataset {
+public final class MNISTDatasetFinetune extends MNISTDataset {
 
-    protected MNISTDataset() {
-        // utility container
+    private MNISTDatasetFinetune() {
+        super();
     }
 
     public enum Type {
         MNIST(
             10,
-            "MNIST - Digits only (0-9)",
-            "https://github.com/rivolink/mnist/raw/master/",
+            "MNIST Finetune - Digits only (0-9)",
+            "https://github.com/rivolink/mnist-custom-dataset/raw/master/dist/mnist/",
             new String[] {
-                "train-images-idx3-ubyte.gz",
-                "train-labels-idx1-ubyte.gz",
-                "t10k-images-idx3-ubyte.gz",
-                "t10k-labels-idx1-ubyte.gz"
+                "mnist-custom-byclass-train-images-idx3-ubyte.gz",
+                "mnist-custom-byclass-train-labels-idx1-ubyte.gz",
+                "mnist-custom-byclass-test-images-idx3-ubyte.gz",
+                "mnist-custom-byclass-test-labels-idx1-ubyte.gz"
             }
         ),
         EMNIST(
             62,
-            "EMNIST - Digits and Letters (0-9, A-Z, a-z)",
-            "https://github.com/rivolink/emnist/raw/master/gzip/",
+            "EMNIST Finetune - Digits and Letters (0-9, A-Z, a-z)",
+            "https://github.com/rivolink/mnist-custom-dataset/raw/master/dist/emnist/",
             new String[] {
-                "emnist-byclass-train-images-idx3-ubyte.gz",
-                "emnist-byclass-train-labels-idx1-ubyte.gz",
-                "emnist-byclass-test-images-idx3-ubyte.gz",
-                "emnist-byclass-test-labels-idx1-ubyte.gz"
+                "emnist-custom-byclass-train-images-idx3-ubyte.gz",
+                "emnist-custom-byclass-train-labels-idx1-ubyte.gz",
+                "emnist-custom-byclass-test-images-idx3-ubyte.gz",
+                "emnist-custom-byclass-test-labels-idx1-ubyte.gz"
             }
         );
 

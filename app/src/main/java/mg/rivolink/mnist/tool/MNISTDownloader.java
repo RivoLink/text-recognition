@@ -7,6 +7,7 @@ import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
 
 import mg.rivolink.mnist.data.MNISTDataset;
+import mg.rivolink.mnist.data.MNISTDatasetFinetune;
 
 /**
  * Downloads MNIST and EMNIST dataset
@@ -16,12 +17,24 @@ import mg.rivolink.mnist.data.MNISTDataset;
 public class MNISTDownloader {
 
     private final String downloadDir;
-    private final MNISTDataset.Type datasetType;
+    private final String description;
+    private final String baseUrl;
+    private final String[] files;
     private volatile boolean downloadCancelled = false;
 
     public MNISTDownloader(String downloadDir, MNISTDataset.Type datasetType) {
         this.downloadDir = downloadDir;
-        this.datasetType = datasetType;
+        this.description = datasetType.description;
+        this.baseUrl = datasetType.baseUrl;
+        this.files = datasetType.files;
+        new File(downloadDir).mkdirs();
+    }
+
+    public MNISTDownloader(String downloadDir, MNISTDatasetFinetune.Type datasetType) {
+        this.downloadDir = downloadDir;
+        this.description = datasetType.description;
+        this.baseUrl = datasetType.baseUrl;
+        this.files = datasetType.files;
         new File(downloadDir).mkdirs();
     }
 
@@ -29,14 +42,14 @@ public class MNISTDownloader {
      * Downloads all dataset files based on type
      */
     public boolean downloadAll() {
-        System.out.println("=== " + datasetType.description + " ===");
+        System.out.println("=== " + description + " ===");
         System.out.println("Starting dataset download to: " + downloadDir);
-        System.out.println("Files needed: " + datasetType.files.length + " (2 training, 2 test)");
+        System.out.println("Files needed: " + files.length + " (2 training, 2 test)");
         System.out.println();
 
-        for (int i = 0; i < datasetType.files.length; i++) {
-            String fileName = datasetType.files[i];
-            System.out.println("[" + (i + 1) + "/" + datasetType.files.length + "] Downloading " + fileName + "...");
+        for (int i = 0; i < files.length; i++) {
+            String fileName = files[i];
+            System.out.println("[" + (i + 1) + "/" + files.length + "] Downloading " + fileName + "...");
             
             if (!download(fileName)) {
                 System.err.println("Failed to download: " + fileName);
@@ -55,7 +68,7 @@ public class MNISTDownloader {
      * Downloads a single dataset file
      */
     private boolean download(String fileName) {
-        String url = datasetType.baseUrl + fileName;
+        String url = baseUrl + fileName;
         String gzFilePath = downloadDir + File.separator + fileName;
         String unzipFilePath = gzFilePath.substring(0, gzFilePath.length() - 3);
 
@@ -205,10 +218,10 @@ public class MNISTDownloader {
      * Verifies that all required files exist
      */
     public boolean verifyDataset() {
-        System.out.println("Verifying dataset files for: " + datasetType.description);
+        System.out.println("Verifying dataset files for: " + description);
         boolean allExist = true;
 
-        for (String fileName : datasetType.files) {
+        for (String fileName : files) {
             String unzipFileName = fileName.substring(0, fileName.length() - 3);
             String filePath = downloadDir + File.separator + unzipFileName;
             File file = new File(filePath);
